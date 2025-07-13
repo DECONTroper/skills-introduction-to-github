@@ -164,21 +164,103 @@
       statusEl.textContent = `Wave ${currentWave}${waveInProgress ? ' in progress...' : ' - press Space to start next wave'}`;
     }
 
-    function generatePath(length) {
+    function generatePath(waveLevel) {
+      const tileBudget = 5 + waveLevel * 2;
       const path = [];
-      let x = 0, y = Math.floor(Math.random() * GRID_SIZE);
-      for (let i = 0; i < length; i++) {
-        path.push([x, y]);
-        x++;
-        if (x >= GRID_SIZE) break;
+      const visited = new Set();
+      
+      // Start at random Y position on leftmost column
+      let currentX = 0;
+      let currentY = Math.floor(Math.random() * GRID_SIZE);
+      
+      path.push([currentX, currentY]);
+      visited.add(`${currentX},${currentY}`);
+      
+      while (path.length < tileBudget && currentX < GRID_SIZE - 1) {
+        const possibleMoves = [];
+        
+        // Check right movement
+        if (currentX + 1 < GRID_SIZE && !visited.has(`${currentX + 1},${currentY}`)) {
+          possibleMoves.push([currentX + 1, currentY, 'right']);
+        }
+        
+        // Check up movement
+        if (currentY - 1 >= 0 && !visited.has(`${currentX},${currentY - 1}`)) {
+          possibleMoves.push([currentX, currentY - 1, 'up']);
+        }
+        
+        // Check down movement
+        if (currentY + 1 < GRID_SIZE && !visited.has(`${currentX},${currentY + 1}`)) {
+          possibleMoves.push([currentX, currentY + 1, 'down']);
+        }
+        
+        if (possibleMoves.length === 0) {
+          // No valid moves, force right movement if possible
+          if (currentX + 1 < GRID_SIZE) {
+            currentX++;
+            path.push([currentX, currentY]);
+          }
+          break;
+        }
+        
+        // Calculate remaining budget and distance to end
+        const remainingBudget = tileBudget - path.length;
+        const distanceToEnd = (GRID_SIZE - 1) - currentX;
+        
+        let selectedMove;
+        
+        // If we're running low on budget, prioritize right movement
+        if (remainingBudget <= distanceToEnd + 2) {
+          const rightMoves = possibleMoves.filter(move => move[2] === 'right');
+          if (rightMoves.length > 0) {
+            selectedMove = rightMoves[0];
+          } else {
+            // No right moves available, pick any available move
+            selectedMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+          }
+        } else {
+          // We have budget to explore, use weighted random selection
+          const weights = possibleMoves.map(move => {
+            if (move[2] === 'right') return 0.4; // Moderate preference for right
+            return 0.3; // Equal weight for up/down to encourage exploration
+          });
+          
+          selectedMove = weightedRandomChoice(possibleMoves, weights);
+        }
+        
+        currentX = selectedMove[0];
+        currentY = selectedMove[1];
+        path.push([currentX, currentY]);
+        visited.add(`${currentX},${currentY}`);
       }
+      
+      // Ensure we reach the rightmost column if we haven't already
+      while (currentX < GRID_SIZE - 1 && path.length < tileBudget) {
+        currentX++;
+        path.push([currentX, currentY]);
+      }
+      
       return path;
+    }
+
+    function weightedRandomChoice(options, weights) {
+      const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+      let random = Math.random() * totalWeight;
+      
+      for (let i = 0; i < options.length; i++) {
+        random -= weights[i];
+        if (random <= 0) {
+          return options[i];
+        }
+      }
+      
+      return options[options.length - 1];
     }
 
     function startWave() {
       currentWave++;
       waveInProgress = true;
-      const path = generatePath(Math.min(10, 5 + currentWave));
+      const path = generatePath(currentWave);
       const enemyCount = 3 + currentWave;
 
       for (let i = 0; i < enemyCount; i++) {

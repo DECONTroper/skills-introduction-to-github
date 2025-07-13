@@ -39,9 +39,18 @@ A JavaScript-based tower defense game implemented using HTML5 Canvas with a 10x1
 - Tombstones mark defeated enemy positions
 
 ### Path Generation
-- Simple horizontal movement from left edge
-- Random starting Y position
-- Path length scales with wave number
+- **Randomized organic paths** with tile budget system
+- **Budget formula**: 5 + waveLevel * 2 tiles
+- **Starting position**: Random Y position on leftmost column (x=0)
+- **Movement rules**: Can move up, down, or right (one tile per step)
+- **Constraints**: 
+  - Must reach rightmost column (x=9) within budget
+  - Cannot visit same tile twice
+  - Stays within grid boundaries
+- **Path behavior**:
+  - Early in budget: Weighted random exploration (40% right, 30% up/down)
+  - Near budget limit: Prioritizes right movement to ensure completion
+  - Guaranteed to reach destination
 
 ## Game Features
 - Visual grid system with 60px tiles
