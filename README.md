@@ -1,73 +1,167 @@
-<header>
+# Abstract Warfare - Tower Defense
 
-<!--
-  <<< Author notes: Course header >>>
-  Include a 1280×640 image, course title in sentence case, and a concise description in emphasis.
-  In your repository settings: enable template repository, add your 1280×640 social image, auto delete head branches.
-  Add your open source license, GitHub uses MIT license.
--->
+A browser-based 2D tower defense game with a minimalist "Abstract Warfare" theme featuring geometric shapes and smooth animations.
 
-# Introduction to GitHub
+## 🎮 Game Overview
 
-_Get started using GitHub in less than an hour._
+Defend your core from waves of geometric invaders! Place hexagonal towers strategically on the grid to stop circles, triangles, and squares from reaching the end of the path.
 
-</header>
+## ✨ Features
 
-<!--
-  <<< Author notes: Step 2 >>>
-  Start this step by acknowledging the previous step.
-  Define terms and link to docs.github.com.
--->
+### Core Gameplay
+- **10x10 Grid System**: Strategic placement on a checkerboard-style grid
+- **Path-Based Enemies**: Enemies follow a predefined path marked in yellow
+- **Tower Placement**: Place up to 5 hexagonal towers on non-path tiles
+- **Wave System**: Progressive difficulty with increasing enemy counts
+- **Core Health**: Lose HP when enemies reach the end
 
-## Step 2: Commit a file
+### Enemy Types
+- **🔴 Circle**: Basic enemy - balanced health and speed
+- **🔵 Triangle**: Fast enemy - lower health, higher speed
+- **🔷 Square**: Tank enemy - high health, slow speed
 
-_You created a branch! :tada:_
+### Tower Mechanics
+- **Hexagonal Design**: Distinctive geometric tower appearance
+- **Automatic Targeting**: Towers automatically target nearest enemies in range
+- **Projectile System**: Visual projectiles with trail effects
+- **Range & Damage**: Configurable attack range and damage values
 
-Creating a branch allows you to edit your project without changing the `main` branch. Now that you have a branch, it’s time to create a file and make your first commit!
+### Visual Effects
+- **Smooth Animations**: 60 FPS game loop with requestAnimationFrame
+- **Death Animations**: Enemies shrink and fade when destroyed
+- **Projectile Trails**: Visual trails behind moving projectiles
+- **Hover Effects**: Visual feedback when placing towers
+- **Health Bars**: Dynamic health indicators on enemies
 
-**What is a commit?**: A _[commit](https://docs.github.com/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/about-commits)_ is a set of changes to the files and folders in your project. A commit exists in a branch. For more information, see "[About commits](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/about-commits)".
+### UI Elements
+- **Game Information**: Wave number, enemies remaining, core HP, towers placed
+- **Control Buttons**: Start wave and reset game functionality
+- **Overlay System**: Instructional overlays for game phases
+- **Responsive Design**: Works on different screen sizes
 
-### :keyboard: Activity: Your first commit
+## 🚀 How to Play
 
-The following steps will guide you through the process of committing a change on GitHub. A commit records changes in renaming, changing content within, creating a new file, and any other changes made to your project. For this exercise, committing a change requires first adding a new file to your new branch.
+1. **Place Towers**: Click on non-path tiles (gray areas) to place hexagonal towers
+2. **Start Wave**: Click "Start Wave" when ready to begin the attack
+3. **Defend**: Watch your towers automatically target and destroy enemies
+4. **Survive**: Prevent enemies from reaching the end of the path
+5. **Progress**: Complete waves to advance to higher difficulties
 
-> [!NOTE]
-> `.md` is a file extension that creates a Markdown file. You can learn more about Markdown by visiting "[Basic writing and formatting syntax](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)" in our docs or by taking the "[Communicating using Markdown](https://github.com/skills/communicate-using-markdown)" Skills course.
+## 🛠️ Technical Implementation
 
-1. On the **< > Code** tab in the header menu of your repository, make sure you're on your new branch `my-first-branch`.
+### Architecture
+- **Modular Design**: Separate classes for Game, Enemy, Tower, and Projectile
+- **Object-Oriented**: Clean separation of concerns and responsibilities
+- **Canvas Rendering**: Pure HTML5 Canvas with no external dependencies
+- **Event-Driven**: Mouse and keyboard input handling
 
-2. Select the **Add file** drop-down and click **Create new file**.
+### Game Loop
+- **60 FPS**: Smooth animation using requestAnimationFrame
+- **Tick-Based**: Consistent timing for game logic updates
+- **State Management**: Clear game states (prep, wave, gameOver)
 
-   ![create new file option](/images/create-new-file.png)
+### Performance
+- **Efficient Rendering**: Only draw what's visible and necessary
+- **Memory Management**: Proper cleanup of dead enemies and expired projectiles
+- **Smooth Animations**: Hardware-accelerated canvas operations
 
-3. In the **Name your file...** field, enter `PROFILE.md`.
+## 📁 File Structure
 
-4. In the **Enter file contents here** area, copy the following content to your file:
+```
+├── index.html          # Main HTML file
+├── styles.css          # CSS styling and animations
+├── js/
+│   ├── Game.js         # Main game controller
+│   ├── Enemy.js        # Enemy class and behavior
+│   ├── Tower.js        # Tower class and targeting
+│   ├── Projectile.js   # Projectile physics and rendering
+│   └── main.js         # Game initialization
+└── README.md           # This file
+```
 
-   ```
-   Welcome to my GitHub profile!
-   ```
+## 🎯 Game Mechanics
 
-   ![profile.md file screenshot](/images/my-profile-file.png)
+### Scoring & Progression
+- **Waves**: Each wave increases enemy count and difficulty
+- **Health System**: Core starts with 100 HP, loses 10 per enemy that reaches the end
+- **Tower Limit**: Maximum 5 towers per game
+- **Enemy Scaling**: Health and speed increase with wave number
 
-5. Click **Commit changes...** in the upper right corner above the contents box. For commits, you can enter a short commit message that describes what changes you made. This message helps others know what's included in your commit. GitHub offers a simple default message, but let's change it slightly for practice. First, enter `Add PROFILE.md` in the first text-entry field titled "Commit message".
+### Strategy Elements
+- **Path Analysis**: Study the yellow path to place towers strategically
+- **Range Coverage**: Position towers to cover multiple path segments
+- **Enemy Prioritization**: Towers automatically target closest enemies
+- **Resource Management**: Limited tower placements require careful planning
 
-   ![screenshot of adding a new file with a commit message](/images/commit-full-screen.png)
+## 🔧 Customization
 
-6. In this lesson, we'll ignore the other fields and click **Commit changes**.
-7. Wait about 20 seconds then refresh this page (the one you're following instructions from). [GitHub Actions](https://docs.github.com/en/actions) will automatically update to the next step.
+The game is designed to be easily expandable:
 
-<footer>
+### Adding New Enemy Types
+```javascript
+// In Enemy.js constructor, add new case:
+case 'newType':
+    this.health = 75;
+    this.speed = 0.025;
+    this.size = 16;
+    this.color = '#newColor';
+    break;
+```
 
-<!--
-  <<< Author notes: Footer >>>
-  Add a link to get support, GitHub status page, code of conduct, license link.
--->
+### Adding New Tower Types
+```javascript
+// Create new tower class or extend existing Tower class
+class NewTower extends Tower {
+    constructor(x, y) {
+        super(x, y);
+        this.range = 100;
+        this.damage = 35;
+        // Custom properties
+    }
+}
+```
+
+### Modifying Game Balance
+- Adjust enemy health, speed, and spawn rates in `Enemy.js`
+- Modify tower damage, range, and cooldown in `Tower.js`
+- Change wave progression in `Game.js`
+
+## 🌟 Future Enhancements
+
+Potential additions for future versions:
+- **Tower Upgrades**: Click towers to upgrade damage/range
+- **Multiple Tower Types**: Different tower shapes and abilities
+- **Sound Effects**: Audio feedback using Web Audio API
+- **Particle Effects**: Enhanced visual feedback
+- **Multiple Maps**: Different path layouts
+- **Power-ups**: Special abilities and bonuses
+- **High Score System**: Local storage for best scores
+
+## 🎨 Design Philosophy
+
+The game embraces minimalism and abstraction:
+- **Geometric Shapes**: All game elements use basic shapes
+- **Color Coding**: Distinct colors for different enemy types
+- **Clean UI**: Uncluttered interface with essential information
+- **Smooth Animations**: Polished feel without overwhelming effects
+
+## 🚀 Getting Started
+
+1. Open `index.html` in a modern web browser
+2. The game will automatically load and display instructions
+3. Click on gray tiles to place towers
+4. Click "Start Wave" to begin gameplay
+5. Enjoy defending against geometric invaders!
+
+## 📱 Browser Compatibility
+
+- **Chrome**: Full support
+- **Firefox**: Full support
+- **Safari**: Full support
+- **Edge**: Full support
+
+Requires a modern browser with HTML5 Canvas support.
 
 ---
 
-Get help: [Post in our discussion board](https://github.com/orgs/skills/discussions/categories/introduction-to-github) &bull; [Review the GitHub status page](https://www.githubstatus.com/)
-
-&copy; 2024 GitHub &bull; [Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md) &bull; [MIT License](https://gh.io/mit)
-
-</footer>
+**Abstract Warfare Tower Defense** - Where geometry meets strategy! 🎮

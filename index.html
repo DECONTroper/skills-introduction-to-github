@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abstract Warfare - Tower Defense</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="ui-panel">
+            <div class="game-info">
+                <div class="info-item">
+                    <span class="label">Wave:</span>
+                    <span id="wave-number">1</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Enemies:</span>
+                    <span id="enemies-remaining">0</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Core HP:</span>
+                    <span id="core-hp">100</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Towers:</span>
+                    <span id="towers-placed">0</span>/5
+                </div>
+            </div>
+            <div class="controls">
+                <button id="start-wave" class="btn">Start Wave</button>
+                <button id="reset-game" class="btn">Reset Game</button>
+            </div>
+        </div>
+        
+        <div class="game-area">
+            <canvas id="gameCanvas" width="600" height="600"></canvas>
+            <div class="game-overlay" id="game-overlay">
+                <div class="overlay-content">
+                    <h2 id="overlay-title">Place Your Towers</h2>
+                    <p id="overlay-message">Click on non-path tiles to place towers before starting the wave.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tower-info">
+            <h3>Tower Types</h3>
+            <div class="tower-types">
+                <div class="tower-type">
+                    <div class="tower-preview hexagon"></div>
+                    <span>Basic Tower</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/Game.js"></script>
+    <script src="js/Enemy.js"></script>
+    <script src="js/Tower.js"></script>
+    <script src="js/Projectile.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

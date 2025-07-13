@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abstract Warfare - Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+        }
+        .demo-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        .btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .feature {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .feature h3 {
+            color: #4ecdc4;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>🎮 Abstract Warfare Tower Defense</h1>
+        <p>A minimalist tower defense game featuring geometric shapes and smooth animations.</p>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="index.html" class="btn">🎯 Play Game</a>
+            <a href="README.md" class="btn">📖 Documentation</a>
+        </div>
+        
+        <h2>✨ Key Features</h2>
+        <div class="features">
+            <div class="feature">
+                <h3>🎯 Strategic Gameplay</h3>
+                <p>Place hexagonal towers strategically on a 10x10 grid to defend against waves of geometric enemies.</p>
+            </div>
+            <div class="feature">
+                <h3>🔴 Multiple Enemy Types</h3>
+                <p>Face circles (basic), triangles (fast), and squares (tank) with different health and speed values.</p>
+            </div>
+            <div class="feature">
+                <h3>⚡ Smooth Animations</h3>
+                <p>60 FPS gameplay with death animations, projectile trails, and visual feedback effects.</p>
+            </div>
+            <div class="feature">
+                <h3>🎨 Minimalist Design</h3>
+                <p>Clean geometric aesthetic with color-coded enemies and intuitive UI design.</p>
+            </div>
+        </div>
+        
+        <h2>🚀 How to Play</h2>
+        <ol>
+            <li><strong>Place Towers:</strong> Click on gray tiles to place hexagonal towers (max 5)</li>
+            <li><strong>Start Wave:</strong> Click "Start Wave" when ready to begin the attack</li>
+            <li><strong>Defend:</strong> Watch your towers automatically target and destroy enemies</li>
+            <li><strong>Survive:</strong> Prevent enemies from reaching the end of the path</li>
+            <li><strong>Progress:</strong> Complete waves to advance to higher difficulties</li>
+        </ol>
+        
+        <h2>🛠️ Technical Details</h2>
+        <ul>
+            <li><strong>Pure JavaScript:</strong> No external dependencies, runs entirely in the browser</li>
+            <li><strong>HTML5 Canvas:</strong> Hardware-accelerated rendering for smooth performance</li>
+            <li><strong>Modular Architecture:</strong> Clean separation of concerns with separate classes</li>
+            <li><strong>Responsive Design:</strong> Works on different screen sizes and devices</li>
+        </ul>
+        
+        <div style="text-align: center; margin: 40px 0;">
+            <a href="index.html" class="btn">🎮 Start Playing Now!</a>
+        </div>
+    </div>
+</body>
+</html>
