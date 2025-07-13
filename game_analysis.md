@@ -21,9 +21,9 @@ A JavaScript-based tower defense game implemented using HTML5 Canvas with a 10x1
 - Enemies follow a straight horizontal path from left to right
 
 ### Controls
-- **Click**: Place selected tower type
-- **Key 1**: Select mage placement mode
-- **Key 2**: Select knight placement mode
+- **Click**: Place selected tower type (if sufficient credits)
+- **Key 1**: Select mage placement mode (10 credits)
+- **Key 2**: Select knight placement mode (15 credits)
 - **Space**: Start next wave (when no wave is active)
 
 ## Technical Implementation
@@ -53,17 +53,29 @@ A JavaScript-based tower defense game implemented using HTML5 Canvas with a 10x1
   - Guaranteed to reach destination
 
 ## Game Features
-- Visual grid system with 60px tiles
-- Real-time status updates
-- Collision detection for tower placement
-- Unit filtering for dead entities
-- Persistent tombstone markers
+- **Visual grid system** with 60px tiles
+- **Credit economy system** (start with 20 credits)
+- **Path preview system** shows upcoming enemy route
+- **Real-time status updates** with clear wave progress
+- **Collision detection** for tower placement
+- **Unit filtering** for dead entities
+- **Persistent tombstone markers**
+- **Credit rewards** for defeating enemies
+
+## Economy System
+- **Starting credits**: 20 (enough for 2 mages)
+- **Troop costs**: Mage (10 credits), Knight (15 credits)
+- **Enemy rewards**: Goblin (2), Orc (4), Boss (10)
+- **Credit display**: Shows current credits and troop costs
 
 ## Potential Improvements
-- Add currency/economy system
+- ~~Add currency/economy system~~ ✅ **IMPLEMENTED**
+- ~~Path preview system~~ ✅ **IMPLEMENTED**
+- ~~Clear wave indicators~~ ✅ **IMPLEMENTED**
 - Implement tower upgrades
 - Add more enemy types and behaviors
-- Implement proper pathfinding
 - Add sound effects and better visuals
-- Victory/defeat conditions
+- Victory/defeat conditions (game over when enemies reach end)
 - Save/load game state
+- Difficulty scaling options
+- Special abilities or spells
