@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mage Tower Defense - Waves + Enemies</title>
+  <style>
+    canvas { background: #f0f0f0; display: block; margin: 0 auto; }
+    body { text-align: center; font-family: sans-serif; }
+  </style>
+</head>
+<body>
+  <h1>Mage Tower Defense</h1>
+  <canvas id="game" width="600" height="600"></canvas>
+  <p>Click to place Mages. Press Space to start next wave.</p>
+  <p id="status"></p>
+  <p id="credits"></p>
+
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+    const statusEl = document.getElementById("status");
+    const creditsEl = document.getElementById("credits");
+
+    const TILE_SIZE = 60;
+    const GRID_SIZE = 10;
+    const TICK_DURATION = 1000; // 1s
+
+    let mages = [];
+    let enemies = [];
+    let tombstones = [];
+    let damageIndicators = [];
+    let tick = 0;
+    let currentWave = 0;
+    let waveInProgress = false;
+    let credits = 20;
+    let currentPath = [];
+    let pathPreview = true;
+
+    const enemyTypes = {
+      goblin: { hp: 3, dmg: 1, speed: 1, color: 'red', reward: 3 }
+    };
+
+    const troopCosts = {
+      mage: 10
+    };
+
+    class Unit {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.hp = 3;
+        this.maxHp = 3;
+        this.range = 3;
+        this.damage = 1;
+        this.type = 'mage';
+      }
+
+      act() {
+        for (const enemy of enemies) {
+          const dist = Math.abs(enemy.x - this.x) + Math.abs(enemy.y - this.y);
+          if (dist <= this.range) {
+            const oldHp = enemy.hp;
+            enemy.hp -= this.damage;
+            drawFireball(this.x, this.y, enemy.x, enemy.y);
+            
+            // Add damage indicator
+            damageIndicators.push({
+              x: enemy.x,
+              y: enemy.y,
+              damage: this.damage,
+              timer: 30
+            });
+            
+            break;
+          }
+        }
+      }
+
+      takeDamage(amount) {
+        this.hp -= amount;
+        damageIndicators.push({
+          x: this.x,
+          y: this.y,
+          damage: amount,
+          timer: 30,
+          color: 'blue'
+        });
+      }
+
+      draw() {
+        drawUnit(this.x, this.y, 'blue', 'Mage');
+        
+        // Draw health bar
+        if (this.hp < this.maxHp) {
+          const barWidth = TILE_SIZE - 10;
+          const barHeight = 4;
+          const barX = this.x * TILE_SIZE + 5;
+          const barY = this.y * TILE_SIZE + TILE_SIZE - 10;
+          
+          ctx.fillStyle = 'red';
+          ctx.fillRect(barX, barY, barWidth, barHeight);
+          
+          ctx.fillStyle = 'green';
+          ctx.fillRect(barX, barY, (this.hp / this.maxHp) * barWidth, barHeight);
+        }
+      }
+    }
+
+    class Enemy {
+      constructor(path) {
+        this.type = 'goblin';
+        this.stats = enemyTypes.goblin;
+        this.hp = this.stats.hp;
+        this.maxHp = this.stats.hp;
+        this.dmg = this.stats.dmg;
+        this.path = path;
+        this.pathIndex = 0;
+        this.updatePosition();
+      }
+
+      updatePosition() {
+        if (this.pathIndex < this.path.length) {
+          [this.x, this.y] = this.path[this.pathIndex];
+        }
+      }
+
+      act() {
+        this.pathIndex++;
+        this.updatePosition();
+        
+        // Attack mages in adjacent tiles
+        for (const mage of mages) {
+          const dist = Math.abs(mage.x - this.x) + Math.abs(mage.y - this.y);
+          if (dist <= 1) {
+            mage.takeDamage(this.dmg);
+          }
+        }
+      }
+      
+      hasReachedEnd() {
+        return this.pathIndex >= this.path.length;
+      }
+
+      draw() {
+        drawUnit(this.x, this.y, this.stats.color, 'Goblin');
+        
+        // Draw health bar
+        if (this.hp < this.maxHp) {
+          const barWidth = TILE_SIZE - 10;
+          const barHeight = 4;
+          const barX = this.x * TILE_SIZE + 5;
+          const barY = this.y * TILE_SIZE + TILE_SIZE - 10;
+          
+          ctx.fillStyle = 'red';
+          ctx.fillRect(barX, barY, barWidth, barHeight);
+          
+          ctx.fillStyle = 'green';
+          ctx.fillRect(barX, barY, (this.hp / this.maxHp) * barWidth, barHeight);
+        }
+      }
+    }
+
+    function drawUnit(x, y, color, label) {
+      ctx.fillStyle = color;
+      ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+      ctx.fillStyle = "white";
+      ctx.font = "12px sans-serif";
+      ctx.fillText(label, x * TILE_SIZE + 5, y * TILE_SIZE + 20);
+    }
+
+    function drawFireball(fromX, fromY, toX, toY) {
+      ctx.strokeStyle = "orange";
+      ctx.beginPath();
+      ctx.moveTo(fromX * TILE_SIZE + TILE_SIZE / 2, fromY * TILE_SIZE + TILE_SIZE / 2);
+      ctx.lineTo(toX * TILE_SIZE + TILE_SIZE / 2, toY * TILE_SIZE + TILE_SIZE / 2);
+      ctx.stroke();
+    }
+
+    function drawGrid() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let y = 0; y < GRID_SIZE; y++) {
+        for (let x = 0; x < GRID_SIZE; x++) {
+          ctx.strokeStyle = "#ccc";
+          ctx.strokeRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+        }
+      }
+    }
+
+    function drawTombstones() {
+      for (const [x, y] of tombstones) {
+        drawUnit(x, y, "gray", "X");
+      }
+    }
+
+    function drawPathPreview() {
+      if (!pathPreview || currentPath.length === 0) return;
+      
+      ctx.strokeStyle = "#ffeb3b";
+      ctx.lineWidth = 3;
+      ctx.setLineDash([5, 5]);
+      
+      ctx.beginPath();
+      for (let i = 0; i < currentPath.length - 1; i++) {
+        const [x1, y1] = currentPath[i];
+        const [x2, y2] = currentPath[i + 1];
+        
+        if (i === 0) {
+          ctx.moveTo(x1 * TILE_SIZE + TILE_SIZE / 2, y1 * TILE_SIZE + TILE_SIZE / 2);
+        }
+        ctx.lineTo(x2 * TILE_SIZE + TILE_SIZE / 2, y2 * TILE_SIZE + TILE_SIZE / 2);
+      }
+      ctx.stroke();
+      
+      // Draw path markers
+      ctx.setLineDash([]);
+      ctx.fillStyle = "#ffeb3b";
+      for (const [x, y] of currentPath) {
+        ctx.fillRect(x * TILE_SIZE + TILE_SIZE / 2 - 3, y * TILE_SIZE + TILE_SIZE / 2 - 3, 6, 6);
+      }
+    }
+
+    function drawDamageIndicators() {
+      ctx.font = "bold 16px sans-serif";
+      ctx.textAlign = "center";
+      
+      for (const indicator of damageIndicators) {
+        const alpha = indicator.timer / 30;
+        const offsetY = (30 - indicator.timer) * 1.5;
+        
+        ctx.fillStyle = indicator.color || 'red';
+        ctx.globalAlpha = alpha;
+        
+        const x = indicator.x * TILE_SIZE + TILE_SIZE / 2;
+        const y = indicator.y * TILE_SIZE + TILE_SIZE / 2 - offsetY;
+        
+        ctx.fillText(`-${indicator.damage}`, x, y);
+        
+        indicator.timer--;
+      }
+      
+      ctx.globalAlpha = 1;
+      ctx.textAlign = "left";
+      
+      // Remove expired indicators
+      damageIndicators = damageIndicators.filter(indicator => indicator.timer > 0);
+    }
+
+    function gameTick() {
+      if (!waveInProgress) return;
+
+      tick++;
+
+      mages.forEach(m => m.act());
+      enemies.forEach(e => e.act());
+
+      // Remove dead mages
+      const deadMages = mages.filter(m => m.hp <= 0);
+      deadMages.forEach(m => {
+        tombstones.push([m.x, m.y]);
+      });
+      mages = mages.filter(m => m.hp > 0);
+
+      // Remove dead enemies and enemies that reached the end
+      enemies = enemies.filter(e => {
+        if (e.hp <= 0) {
+          tombstones.push([e.x, e.y]);
+          credits += enemyTypes[e.type].reward;
+          return false;
+        }
+        if (e.hasReachedEnd()) {
+          // Enemy reached the end - could add game over logic here
+          return false;
+        }
+        return true;
+      });
+
+      if (enemies.length === 0) {
+        waveInProgress = false;
+        pathPreview = true;
+        currentPath = generatePath(currentWave + 1);
+      }
+
+      draw();
+    }
+
+    function draw() {
+      drawGrid();
+      drawPathPreview();
+      drawTombstones();
+      mages.forEach(m => m.draw());
+      enemies.forEach(e => e.draw());
+      drawDamageIndicators();
+      
+      // Update status display
+      if (waveInProgress) {
+        statusEl.textContent = `Wave ${currentWave} - ${enemies.length} enemies remaining`;
+      } else if (currentWave === 0) {
+        statusEl.textContent = `Prepare for Wave 1 - Press Space to start`;
+      } else {
+        statusEl.textContent = `Wave ${currentWave} Complete! Press Space for Wave ${currentWave + 1}`;
+      }
+      
+      // Update credits display
+      creditsEl.textContent = `Credits: ${credits} | Mage Cost: ${troopCosts.mage}`;
+    }
+
+    function generatePath(waveLevel) {
+      const tileBudget = 5 + waveLevel * 2;
+      const path = [];
+      const visited = new Set();
+      
+      // Start at random Y position on leftmost column
+      let currentX = 0;
+      let currentY = Math.floor(Math.random() * GRID_SIZE);
+      
+      path.push([currentX, currentY]);
+      visited.add(`${currentX},${currentY}`);
+      
+      while (path.length < tileBudget && currentX < GRID_SIZE - 1) {
+        const possibleMoves = [];
+        
+        // Check right movement
+        if (currentX + 1 < GRID_SIZE && !visited.has(`${currentX + 1},${currentY}`)) {
+          possibleMoves.push([currentX + 1, currentY, 'right']);
+        }
+        
+        // Check up movement
+        if (currentY - 1 >= 0 && !visited.has(`${currentX},${currentY - 1}`)) {
+          possibleMoves.push([currentX, currentY - 1, 'up']);
+        }
+        
+        // Check down movement
+        if (currentY + 1 < GRID_SIZE && !visited.has(`${currentX},${currentY + 1}`)) {
+          possibleMoves.push([currentX, currentY + 1, 'down']);
+        }
+        
+        if (possibleMoves.length === 0) {
+          // No valid moves, force right movement if possible
+          if (currentX + 1 < GRID_SIZE) {
+            currentX++;
+            path.push([currentX, currentY]);
+          }
+          break;
+        }
+        
+        // Calculate remaining budget and distance to end
+        const remainingBudget = tileBudget - path.length;
+        const distanceToEnd = (GRID_SIZE - 1) - currentX;
+        
+        let selectedMove;
+        
+        // If we're running low on budget, prioritize right movement
+        if (remainingBudget <= distanceToEnd + 2) {
+          const rightMoves = possibleMoves.filter(move => move[2] === 'right');
+          if (rightMoves.length > 0) {
+            selectedMove = rightMoves[0];
+          } else {
+            // No right moves available, pick any available move
+            selectedMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+          }
+        } else {
+          // We have budget to explore, use weighted random selection
+          const weights = possibleMoves.map(move => {
+            if (move[2] === 'right') return 0.4; // Moderate preference for right
+            return 0.3; // Equal weight for up/down to encourage exploration
+          });
+          
+          selectedMove = weightedRandomChoice(possibleMoves, weights);
+        }
+        
+        currentX = selectedMove[0];
+        currentY = selectedMove[1];
+        path.push([currentX, currentY]);
+        visited.add(`${currentX},${currentY}`);
+      }
+      
+      // Ensure we reach the rightmost column if we haven't already
+      while (currentX < GRID_SIZE - 1 && path.length < tileBudget) {
+        currentX++;
+        path.push([currentX, currentY]);
+      }
+      
+      return path;
+    }
+
+    function weightedRandomChoice(options, weights) {
+      const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+      let random = Math.random() * totalWeight;
+      
+      for (let i = 0; i < options.length; i++) {
+        random -= weights[i];
+        if (random <= 0) {
+          return options[i];
+        }
+      }
+      
+      return options[options.length - 1];
+    }
+
+    function startWave() {
+      currentWave++;
+      waveInProgress = true;
+      pathPreview = false;
+      currentPath = generatePath(currentWave);
+      const enemyCount = 3 + currentWave;
+
+      for (let i = 0; i < enemyCount; i++) {
+        enemies.push(new Enemy(currentPath));
+      }
+    }
+
+    canvas.addEventListener("click", (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.floor((e.clientX - rect.left) / TILE_SIZE);
+      const y = Math.floor((e.clientY - rect.top) / TILE_SIZE);
+      
+      // Check if tile is occupied
+      if (mages.some(m => m.x === x && m.y === y)) {
+        return;
+      }
+      
+      // Check if player has enough credits
+      const cost = troopCosts.mage;
+      if (credits >= cost) {
+        credits -= cost;
+        mages.push(new Unit(x, y));
+        draw();
+      }
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.code === 'Space' && !waveInProgress) {
+        e.preventDefault();
+        startWave();
+      }
+    });
+
+    // Initialize path preview for first wave
+    currentPath = generatePath(1);
+    
+    setInterval(gameTick, TICK_DURATION);
+    draw();
+  </script>
+</body>
+</html>
