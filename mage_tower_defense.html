@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mage Tower Defense - Waves + Enemies</title>
+  <style>
+    canvas { background: #f0f0f0; display: block; margin: 0 auto; }
+    body { text-align: center; font-family: sans-serif; }
+  </style>
+</head>
+<body>
+  <h1>Mage Tower Defense</h1>
+  <canvas id="game" width="600" height="600"></canvas>
+  <p>Click to place Mages (key 1), Knights (key 2). Press Space to start next wave.</p>
+  <p id="status"></p>
+
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+    const statusEl = document.getElementById("status");
+
+    const TILE_SIZE = 60;
+    const GRID_SIZE = 10;
+    const TICK_DURATION = 1000; // 1s
+
+    let mages = [];
+    let knights = [];
+    let enemies = [];
+    let tombstones = [];
+    let tick = 0;
+    let currentWave = 0;
+    let placingType = 'mage';
+    let waveInProgress = false;
+
+    const enemyTypes = {
+      goblin: { hp: 2, dmg: 1, speed: 1, color: 'red' },
+      orc: { hp: 4, dmg: 2, speed: 1, color: 'darkgreen' },
+      boss: { hp: 10, dmg: 3, speed: 1, color: 'black' }
+    };
+
+    class Unit {
+      constructor(x, y, type) {
+        this.x = x;
+        this.y = y;
+        this.hp = type === 'knight' ? 5 : 3;
+        this.range = type === 'knight' ? 1 : 3;
+        this.damage = type === 'knight' ? 2 : 1;
+        this.type = type;
+      }
+
+      act() {
+        for (const enemy of enemies) {
+          const dist = Math.abs(enemy.x - this.x) + Math.abs(enemy.y - this.y);
+          if (dist <= this.range) {
+            enemy.hp -= this.damage;
+            drawFireball(this.x, this.y, enemy.x, enemy.y);
+            break;
+          }
+        }
+      }
+
+      draw() {
+        const color = this.type === 'knight' ? 'gray' : 'blue';
+        drawUnit(this.x, this.y, color, this.type.charAt(0).toUpperCase() + this.type.slice(1));
+      }
+    }
+
+    class Enemy {
+      constructor(type, path) {
+        this.type = type;
+        this.stats = enemyTypes[type];
+        this.hp = this.stats.hp;
+        this.dmg = this.stats.dmg;
+        this.path = path;
+        this.pathIndex = 0;
+        this.updatePosition();
+      }
+
+      updatePosition() {
+        if (this.pathIndex < this.path.length) {
+          [this.x, this.y] = this.path[this.pathIndex];
+        }
+      }
+
+      act() {
+        this.pathIndex++;
+        this.updatePosition();
+        for (const unit of [...mages, ...knights]) {
+          const dist = Math.abs(unit.x - this.x) + Math.abs(unit.y - this.y);
+          if (dist <= 1) {
+            unit.hp -= this.dmg;
+          }
+        }
+      }
+
+      draw() {
+        drawUnit(this.x, this.y, this.stats.color, this.type);
+      }
+    }
+
+    function drawUnit(x, y, color, label) {
+      ctx.fillStyle = color;
+      ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+      ctx.fillStyle = "white";
+      ctx.font = "12px sans-serif";
+      ctx.fillText(label, x * TILE_SIZE + 5, y * TILE_SIZE + 20);
+    }
+
+    function drawFireball(fromX, fromY, toX, toY) {
+      ctx.strokeStyle = "orange";
+      ctx.beginPath();
+      ctx.moveTo(fromX * TILE_SIZE + TILE_SIZE / 2, fromY * TILE_SIZE + TILE_SIZE / 2);
+      ctx.lineTo(toX * TILE_SIZE + TILE_SIZE / 2, toY * TILE_SIZE + TILE_SIZE / 2);
+      ctx.stroke();
+    }
+
+    function drawGrid() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let y = 0; y < GRID_SIZE; y++) {
+        for (let x = 0; x < GRID_SIZE; x++) {
+          ctx.strokeStyle = "#ccc";
+          ctx.strokeRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+        }
+      }
+    }
+
+    function drawTombstones() {
+      for (const [x, y] of tombstones) {
+        drawUnit(x, y, "gray", "X");
+      }
+    }
+
+    function gameTick() {
+      if (!waveInProgress) return;
+
+      tick++;
+
+      mages.forEach(m => m.act());
+      knights.forEach(k => k.act());
+      enemies.forEach(e => e.act());
+
+      mages = mages.filter(m => m.hp > 0);
+      knights = knights.filter(k => k.hp > 0);
+
+      enemies = enemies.filter(e => {
+        if (e.hp <= 0) {
+          tombstones.push([e.x, e.y]);
+          return false;
+        }
+        return true;
+      });
+
+      if (enemies.length === 0) waveInProgress = false;
+
+      draw();
+    }
+
+    function draw() {
+      drawGrid();
+      drawTombstones();
+      mages.forEach(m => m.draw());
+      knights.forEach(k => k.draw());
+      enemies.forEach(e => e.draw());
+      statusEl.textContent = `Wave ${currentWave}${waveInProgress ? ' in progress...' : ' - press Space to start next wave'}`;
+    }
+
+    function generatePath(length) {
+      const path = [];
+      let x = 0, y = Math.floor(Math.random() * GRID_SIZE);
+      for (let i = 0; i < length; i++) {
+        path.push([x, y]);
+        x++;
+        if (x >= GRID_SIZE) break;
+      }
+      return path;
+    }
+
+    function startWave() {
+      currentWave++;
+      waveInProgress = true;
+      const path = generatePath(Math.min(10, 5 + currentWave));
+      const enemyCount = 3 + currentWave;
+
+      for (let i = 0; i < enemyCount; i++) {
+        const roll = Math.random();
+        if (currentWave % 5 === 0 && i === 0) {
+          enemies.push(new Enemy('boss', path));
+        } else if (roll < 0.7) {
+          enemies.push(new Enemy('goblin', path));
+        } else {
+          enemies.push(new Enemy('orc', path));
+        }
+      }
+    }
+
+    canvas.addEventListener("click", (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.floor((e.clientX - rect.left) / TILE_SIZE);
+      const y = Math.floor((e.clientY - rect.top) / TILE_SIZE);
+      if (!mages.some(m => m.x === x && m.y === y) && !knights.some(k => k.x === x && k.y === y)) {
+        if (placingType === 'mage') mages.push(new Unit(x, y, 'mage'));
+        else if (placingType === 'knight') knights.push(new Unit(x, y, 'knight'));
+        draw();
+      }
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.code === 'Digit1') placingType = 'mage';
+      if (e.code === 'Digit2') placingType = 'knight';
+      if (e.code === 'Space' && !waveInProgress) startWave();
+    });
+
+    setInterval(gameTick, TICK_DURATION);
+    draw();
+  </script>
+</body>
+</html>
