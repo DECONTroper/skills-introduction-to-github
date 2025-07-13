@@ -11,7 +11,7 @@
 <body>
   <h1>Mage Tower Defense</h1>
   <canvas id="game" width="600" height="600"></canvas>
-  <p>Click to place Mages (key 1), Knights (key 2). Press Space to start next wave.</p>
+  <p>Click to place Mages. Press Space to start next wave.</p>
   <p id="status"></p>
   <p id="credits"></p>
 
@@ -26,60 +26,92 @@
     const TICK_DURATION = 1000; // 1s
 
     let mages = [];
-    let knights = [];
     let enemies = [];
     let tombstones = [];
+    let damageIndicators = [];
     let tick = 0;
     let currentWave = 0;
-    let placingType = 'mage';
     let waveInProgress = false;
     let credits = 20;
     let currentPath = [];
     let pathPreview = true;
 
     const enemyTypes = {
-      goblin: { hp: 2, dmg: 1, speed: 1, color: 'red', reward: 2 },
-      orc: { hp: 4, dmg: 2, speed: 1, color: 'darkgreen', reward: 4 },
-      boss: { hp: 10, dmg: 3, speed: 1, color: 'black', reward: 10 }
+      goblin: { hp: 3, dmg: 1, speed: 1, color: 'red', reward: 3 }
     };
 
     const troopCosts = {
-      mage: 10,
-      knight: 15
+      mage: 10
     };
 
     class Unit {
-      constructor(x, y, type) {
+      constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.hp = type === 'knight' ? 5 : 3;
-        this.range = type === 'knight' ? 1 : 3;
-        this.damage = type === 'knight' ? 2 : 1;
-        this.type = type;
+        this.hp = 3;
+        this.maxHp = 3;
+        this.range = 3;
+        this.damage = 1;
+        this.type = 'mage';
       }
 
       act() {
         for (const enemy of enemies) {
           const dist = Math.abs(enemy.x - this.x) + Math.abs(enemy.y - this.y);
           if (dist <= this.range) {
+            const oldHp = enemy.hp;
             enemy.hp -= this.damage;
             drawFireball(this.x, this.y, enemy.x, enemy.y);
+            
+            // Add damage indicator
+            damageIndicators.push({
+              x: enemy.x,
+              y: enemy.y,
+              damage: this.damage,
+              timer: 30
+            });
+            
             break;
           }
         }
       }
 
+      takeDamage(amount) {
+        this.hp -= amount;
+        damageIndicators.push({
+          x: this.x,
+          y: this.y,
+          damage: amount,
+          timer: 30,
+          color: 'blue'
+        });
+      }
+
       draw() {
-        const color = this.type === 'knight' ? 'gray' : 'blue';
-        drawUnit(this.x, this.y, color, this.type.charAt(0).toUpperCase() + this.type.slice(1));
+        drawUnit(this.x, this.y, 'blue', 'Mage');
+        
+        // Draw health bar
+        if (this.hp < this.maxHp) {
+          const barWidth = TILE_SIZE - 10;
+          const barHeight = 4;
+          const barX = this.x * TILE_SIZE + 5;
+          const barY = this.y * TILE_SIZE + TILE_SIZE - 10;
+          
+          ctx.fillStyle = 'red';
+          ctx.fillRect(barX, barY, barWidth, barHeight);
+          
+          ctx.fillStyle = 'green';
+          ctx.fillRect(barX, barY, (this.hp / this.maxHp) * barWidth, barHeight);
+        }
       }
     }
 
     class Enemy {
-      constructor(type, path) {
-        this.type = type;
-        this.stats = enemyTypes[type];
+      constructor(path) {
+        this.type = 'goblin';
+        this.stats = enemyTypes.goblin;
         this.hp = this.stats.hp;
+        this.maxHp = this.stats.hp;
         this.dmg = this.stats.dmg;
         this.path = path;
         this.pathIndex = 0;
@@ -95,16 +127,36 @@
       act() {
         this.pathIndex++;
         this.updatePosition();
-        for (const unit of [...mages, ...knights]) {
-          const dist = Math.abs(unit.x - this.x) + Math.abs(unit.y - this.y);
+        
+        // Attack mages in adjacent tiles
+        for (const mage of mages) {
+          const dist = Math.abs(mage.x - this.x) + Math.abs(mage.y - this.y);
           if (dist <= 1) {
-            unit.hp -= this.dmg;
+            mage.takeDamage(this.dmg);
           }
         }
       }
+      
+      hasReachedEnd() {
+        return this.pathIndex >= this.path.length;
+      }
 
       draw() {
-        drawUnit(this.x, this.y, this.stats.color, this.type);
+        drawUnit(this.x, this.y, this.stats.color, 'Goblin');
+        
+        // Draw health bar
+        if (this.hp < this.maxHp) {
+          const barWidth = TILE_SIZE - 10;
+          const barHeight = 4;
+          const barX = this.x * TILE_SIZE + 5;
+          const barY = this.y * TILE_SIZE + TILE_SIZE - 10;
+          
+          ctx.fillStyle = 'red';
+          ctx.fillRect(barX, barY, barWidth, barHeight);
+          
+          ctx.fillStyle = 'green';
+          ctx.fillRect(barX, barY, (this.hp / this.maxHp) * barWidth, barHeight);
+        }
       }
     }
 
@@ -167,22 +219,56 @@
       }
     }
 
+    function drawDamageIndicators() {
+      ctx.font = "bold 16px sans-serif";
+      ctx.textAlign = "center";
+      
+      for (const indicator of damageIndicators) {
+        const alpha = indicator.timer / 30;
+        const offsetY = (30 - indicator.timer) * 1.5;
+        
+        ctx.fillStyle = indicator.color || 'red';
+        ctx.globalAlpha = alpha;
+        
+        const x = indicator.x * TILE_SIZE + TILE_SIZE / 2;
+        const y = indicator.y * TILE_SIZE + TILE_SIZE / 2 - offsetY;
+        
+        ctx.fillText(`-${indicator.damage}`, x, y);
+        
+        indicator.timer--;
+      }
+      
+      ctx.globalAlpha = 1;
+      ctx.textAlign = "left";
+      
+      // Remove expired indicators
+      damageIndicators = damageIndicators.filter(indicator => indicator.timer > 0);
+    }
+
     function gameTick() {
       if (!waveInProgress) return;
 
       tick++;
 
       mages.forEach(m => m.act());
-      knights.forEach(k => k.act());
       enemies.forEach(e => e.act());
 
+      // Remove dead mages
+      const deadMages = mages.filter(m => m.hp <= 0);
+      deadMages.forEach(m => {
+        tombstones.push([m.x, m.y]);
+      });
       mages = mages.filter(m => m.hp > 0);
-      knights = knights.filter(k => k.hp > 0);
 
+      // Remove dead enemies and enemies that reached the end
       enemies = enemies.filter(e => {
         if (e.hp <= 0) {
           tombstones.push([e.x, e.y]);
           credits += enemyTypes[e.type].reward;
+          return false;
+        }
+        if (e.hasReachedEnd()) {
+          // Enemy reached the end - could add game over logic here
           return false;
         }
         return true;
@@ -202,8 +288,8 @@
       drawPathPreview();
       drawTombstones();
       mages.forEach(m => m.draw());
-      knights.forEach(k => k.draw());
       enemies.forEach(e => e.draw());
+      drawDamageIndicators();
       
       // Update status display
       if (waveInProgress) {
@@ -215,7 +301,7 @@
       }
       
       // Update credits display
-      creditsEl.textContent = `Credits: ${credits} | Mage: ${troopCosts.mage} | Knight: ${troopCosts.knight}`;
+      creditsEl.textContent = `Credits: ${credits} | Mage Cost: ${troopCosts.mage}`;
     }
 
     function generatePath(waveLevel) {
@@ -319,14 +405,7 @@
       const enemyCount = 3 + currentWave;
 
       for (let i = 0; i < enemyCount; i++) {
-        const roll = Math.random();
-        if (currentWave % 5 === 0 && i === 0) {
-          enemies.push(new Enemy('boss', currentPath));
-        } else if (roll < 0.7) {
-          enemies.push(new Enemy('goblin', currentPath));
-        } else {
-          enemies.push(new Enemy('orc', currentPath));
-        }
+        enemies.push(new Enemy(currentPath));
       }
     }
 
@@ -336,24 +415,24 @@
       const y = Math.floor((e.clientY - rect.top) / TILE_SIZE);
       
       // Check if tile is occupied
-      if (mages.some(m => m.x === x && m.y === y) || knights.some(k => k.x === x && k.y === y)) {
+      if (mages.some(m => m.x === x && m.y === y)) {
         return;
       }
       
       // Check if player has enough credits
-      const cost = troopCosts[placingType];
+      const cost = troopCosts.mage;
       if (credits >= cost) {
         credits -= cost;
-        if (placingType === 'mage') mages.push(new Unit(x, y, 'mage'));
-        else if (placingType === 'knight') knights.push(new Unit(x, y, 'knight'));
+        mages.push(new Unit(x, y));
         draw();
       }
     });
 
     window.addEventListener("keydown", (e) => {
-      if (e.code === 'Digit1') placingType = 'mage';
-      if (e.code === 'Digit2') placingType = 'knight';
-      if (e.code === 'Space' && !waveInProgress) startWave();
+      if (e.code === 'Space' && !waveInProgress) {
+        e.preventDefault();
+        startWave();
+      }
     });
 
     // Initialize path preview for first wave
