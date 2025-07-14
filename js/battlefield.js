@@ -357,44 +357,144 @@ class Battlefield {
     }
     
     // Animation methods
-    animateUnitMove(unit, path, callback) {
+    async animateUnitMove(unit, path, callback) {
         if (!path || path.length < 2) {
             if (callback) callback();
-            return;
+            return Promise.resolve();
         }
-        
         let currentStep = 0;
-        const animate = () => {
-            if (currentStep >= path.length - 1) {
+        const totalSteps = path.length - 1;
+        const animateStep = () => {
+            if (currentStep >= totalSteps) {
                 if (callback) callback();
-                return;
+                return Promise.resolve();
             }
-            
             const currentPos = path[currentStep];
             const nextPos = path[currentStep + 1];
-            
-            // Move unit
-            this.moveUnit(unit, nextPos.x, nextPos.y);
-            
-            currentStep++;
-            setTimeout(animate, 200);
+            // Animate smooth movement
+            return this.smoothMove(unit, currentPos, nextPos, 200).then(() => {
+                this.moveUnit(unit, nextPos.x, nextPos.y);
+                currentStep++;
+                return animateStep();
+            });
         };
-        
-        animate();
+        return animateStep();
     }
-    
-    animateAttack(attacker, target, callback) {
-        // Flash the attacker
-        const originalColor = attacker.getDisplayColor();
-        attacker.getDisplayColor = () => '#ffff00';
-        this.render();
-        
-        setTimeout(() => {
-            attacker.getDisplayColor = () => originalColor;
+
+    smoothMove(unit, from, to, duration) {
+        return new Promise(resolve => {
+            const start = performance.now();
+            const startX = from.x * this.tileSize;
+            const startY = from.y * this.tileSize;
+            const endX = to.x * this.tileSize;
+            const endY = to.y * this.tileSize;
+            const animate = (now) => {
+                const elapsed = now - start;
+                const t = Math.min(1, elapsed / duration);
+                const currX = startX + (endX - startX) * t;
+                const currY = startY + (endY - startY) * t;
+                this.render();
+                // Draw moving unit at interpolated position
+                this.drawUnitAt(unit, currX, currY);
+                if (t < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    resolve();
+                }
+            };
+            requestAnimationFrame(animate);
+        });
+    }
+
+    drawUnitAt(unit, px, py) {
+        const centerX = px + this.tileSize / 2;
+        const centerY = py + this.tileSize / 2;
+        // Draw unit background circle
+        this.ctx.save();
+        this.ctx.globalAlpha = 0.85;
+        this.ctx.fillStyle = unit.getDisplayColor();
+        this.ctx.beginPath();
+        this.ctx.arc(centerX, centerY, this.tileSize / 3, 0, 2 * Math.PI);
+        this.ctx.fill();
+        this.ctx.strokeStyle = '#2c3e50';
+        this.ctx.lineWidth = 2;
+        this.ctx.stroke();
+        // Draw unit symbol
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.font = `${this.tileSize / 3}px Arial`;
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(unit.getDisplaySymbol(), centerX, centerY);
+        this.ctx.restore();
+    }
+
+    async animateAttack(attacker, target, callback) {
+        // Flash attacker and shake target
+        await this.flashUnit(attacker, '#ffff00', 120);
+        await this.shakeUnit(target, 3, 80);
+        await this.hitEffect(target, '#ff6b6b', 120);
+        if (callback) callback();
+        return Promise.resolve();
+    }
+
+    flashUnit(unit, color, duration) {
+        return new Promise(resolve => {
+            const origColor = unit.getDisplayColor;
+            unit.getDisplayColor = () => color;
             this.render();
-            
-            if (callback) callback();
-        }, 300);
+            setTimeout(() => {
+                unit.getDisplayColor = origColor;
+                this.render();
+                resolve();
+            }, duration);
+        });
+    }
+
+    shakeUnit(unit, shakes, duration) {
+        return new Promise(resolve => {
+            const origX = unit.x;
+            const origY = unit.y;
+            let count = 0;
+            const doShake = () => {
+                if (count >= shakes) {
+                    this.render();
+                    resolve();
+                    return;
+                }
+                this.render();
+                // Draw unit offset
+                const offset = (count % 2 === 0 ? -1 : 1) * 6;
+                this.drawUnitAt(unit, origX * this.tileSize + offset, origY * this.tileSize);
+                setTimeout(() => {
+                    count++;
+                    doShake();
+                }, duration / shakes);
+            };
+            doShake();
+        });
+    }
+
+    hitEffect(unit, color, duration) {
+        return new Promise(resolve => {
+            const origDraw = this.drawUnit;
+            this.drawUnit = (u, x, y) => {
+                if (u === unit) {
+                    this.ctx.save();
+                    this.ctx.shadowColor = color;
+                    this.ctx.shadowBlur = 20;
+                    origDraw.call(this, u, x, y);
+                    this.ctx.restore();
+                } else {
+                    origDraw.call(this, u, x, y);
+                }
+            };
+            this.render();
+            setTimeout(() => {
+                this.drawUnit = origDraw;
+                this.render();
+                resolve();
+            }, duration);
+        });
     }
     
     // Utility methods

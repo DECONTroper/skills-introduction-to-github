@@ -10,6 +10,10 @@ class Game {
         this.hand = [];
         this.discardPile = [];
         
+        this.enemyDeck = [];
+        this.enemyHand = [];
+        this.enemyDiscardPile = [];
+        
         this.playerUnits = [];
         this.enemyUnits = [];
         
@@ -31,8 +35,14 @@ class Game {
         this.deck = this.cardManager.getStartingDeck();
         this.shuffleDeck();
         
+        this.enemyDeck = this.cardManager.getStartingDeck();
+        this.shuffleEnemyDeck();
+        this.enemyHand = [];
+        this.enemyDiscardPile = [];
+        
         // Draw initial hand
         this.drawCards(2);
+        this.drawEnemyCards(2);
         
         this.updateUI();
         this.logMessage("Game started! Deploy your units and defeat the enemies.");
@@ -108,12 +118,10 @@ class Game {
         this.gameState = 'combat_turn';
         this.logMessage("Combat phase begins!");
         
-        // Spawn enemies for this wave
-        this.spawnEnemies();
-        
+        // Enemy deploys units from hand
+        this.enemyDeployUnits();
         // Execute combat
         this.executeCombat();
-        
         // Check victory conditions
         this.checkVictoryConditions();
     }
@@ -130,6 +138,23 @@ class Game {
                 this.enemyUnits.push(enemy);
                 this.battlefield.placeUnit(enemy, spawnPosition.x, spawnPosition.y);
                 this.logMessage(`${enemyCard.name} spawned at (${spawnPosition.x}, ${spawnPosition.y})`);
+            }
+        }
+    }
+    
+    enemyDeployUnits() {
+        // Try to deploy up to 2 units from enemy hand to random spawn positions
+        let deployed = 0;
+        for (let i = this.enemyHand.length - 1; i >= 0 && deployed < 2; i--) {
+            const card = this.enemyHand[i];
+            const spawnPosition = this.getRandomSpawnPosition();
+            if (spawnPosition) {
+                const enemy = new Unit(card, spawnPosition.x, spawnPosition.y, 'enemy');
+                this.enemyUnits.push(enemy);
+                this.battlefield.placeUnit(enemy, spawnPosition.x, spawnPosition.y);
+                this.logMessage(`${card.name} (enemy) deployed at (${spawnPosition.x}, ${spawnPosition.y})`);
+                this.enemyHand.splice(i, 1);
+                deployed++;
             }
         }
     }
@@ -157,60 +182,59 @@ class Game {
         return availablePositions[Math.floor(Math.random() * availablePositions.length)];
     }
     
-    executeCombat() {
+    async executeCombat() {
         // Sort units by priority (player units first, then enemies)
         const allUnits = [...this.playerUnits, ...this.enemyUnits];
         allUnits.sort((a, b) => {
             if (a.team !== b.team) return a.team === 'player' ? -1 : 1;
             return b.priority - a.priority;
         });
-        
-        // Execute actions for each unit
+        // Execute actions for each unit, with animation delay
         for (const unit of allUnits) {
             if (unit.health <= 0) continue;
-            
             const action = this.ai.getUnitAction(unit, this.battlefield, this.playerUnits, this.enemyUnits);
-            this.executeAction(unit, action);
+            await this.executeActionWithAnimation(unit, action);
         }
-        
         // Remove dead units
         this.removeDeadUnits();
-        
         // Increment turn
         this.turn++;
-        
         // Reset for next player turn
         this.gameState = 'player_turn';
-        this.energy = Math.min(this.maxEnergy + Math.floor(this.turn / 3), 6); // Energy scales with turns
+        this.energy = Math.min(this.maxEnergy + Math.floor(this.turn / 3), 6);
         this.drawCards(2);
-        
+        this.drawEnemyCards(2);
         this.logMessage("Your turn! Deploy units and end turn when ready.");
     }
     
-    executeAction(unit, action) {
+    async executeActionWithAnimation(unit, action) {
         switch (action.type) {
             case 'move':
+                await this.battlefield.animateUnitMove(unit, [
+                    { x: unit.x, y: unit.y },
+                    { x: action.targetX, y: action.targetY }
+                ]);
                 this.battlefield.moveUnit(unit, action.targetX, action.targetY);
                 this.logMessage(`${unit.name} moved to (${action.targetX}, ${action.targetY})`);
                 break;
-                
             case 'attack':
                 const target = this.battlefield.getUnit(action.targetX, action.targetY);
                 if (target) {
+                    await this.battlefield.animateAttack(unit, target);
                     const damage = this.calculateDamage(unit, target);
                     target.takeDamage(damage);
                     this.logMessage(`${unit.name} attacked ${target.name} for ${damage} damage!`);
-                    
                     if (target.health <= 0) {
                         this.logMessage(`${target.name} was defeated!`);
                     }
                 }
                 break;
-                
             case 'wait':
                 this.logMessage(`${unit.name} waited.`);
                 break;
         }
+        // Add a small delay between actions for animation pacing
+        await new Promise(res => setTimeout(res, 200));
     }
     
     calculateDamage(attacker, defender) {
@@ -358,6 +382,17 @@ class Game {
             handContainer.appendChild(cardElement);
         });
         
+        // Update enemy hand
+        const enemyHandContainer = document.getElementById('enemy-hand');
+        enemyHandContainer.innerHTML = '';
+        this.enemyHand.forEach((card, index) => {
+            const cardElement = this.createCardElement(card);
+            cardElement.addEventListener('click', () => {
+                // Enemy AI will handle deployment from their hand
+            });
+            enemyHandContainer.appendChild(cardElement);
+        });
+        
         // Update battle log
         const logContainer = document.getElementById('battle-log');
         logContainer.innerHTML = '';
@@ -407,6 +442,9 @@ class Game {
         this.deck = [];
         this.hand = [];
         this.discardPile = [];
+        this.enemyDeck = [];
+        this.enemyHand = [];
+        this.enemyDiscardPile = [];
         this.playerUnits = [];
         this.enemyUnits = [];
         this.battleLog = [];
