@@ -7,67 +7,145 @@
   Add your open source license, GitHub uses MIT license.
 -->
 
-# Introduction to GitHub
+# Roguelike Grid Battle Simulator
 
-_Get started using GitHub in less than an hour._
+A turn-based tactical roguelike game where you deploy unit cards onto an 8x8 grid battlefield and watch them fight automatically using AI behavior logic.
 
-</header>
+## 🎮 Game Concept
 
-<!--
-  <<< Author notes: Step 2 >>>
-  Start this step by acknowledging the previous step.
-  Define terms and link to docs.github.com.
--->
+Deploy troops from your hand of cards onto the battlefield, then watch as they automatically engage enemies based on their unique AI behaviors. Victory depends on smart positioning, unit synergy, and strategic deck building.
 
-## Step 2: Commit a file
+## ⚙️ Core Mechanics
 
-_You created a branch! :tada:_
+### Grid-Based Combat
+- **8x8 Battlefield**: Strategic positioning on a grid
+- **Turn-Based**: Player deployment phase followed by automatic combat
+- **AI-Driven Units**: Each unit type has unique behavior patterns
 
-Creating a branch allows you to edit your project without changing the `main` branch. Now that you have a branch, it’s time to create a file and make your first commit!
+### Card System
+- **Unit Cards**: Represent deployable troops with stats and behaviors
+- **Energy System**: Each card costs energy to play
+- **Deck Building**: Add new cards after each wave
+- **Hand Management**: Draw 2 cards per turn
 
-**What is a commit?**: A _[commit](https://docs.github.com/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/about-commits)_ is a set of changes to the files and folders in your project. A commit exists in a branch. For more information, see "[About commits](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/about-commits)".
+### Combat System
+- **Automatic Actions**: Units act based on their behavior logic
+- **Range & Movement**: Different units have different attack ranges and movement
+- **Health & Damage**: Classic RPG combat mechanics
+- **Special Abilities**: Units have unique traits and abilities
 
-### :keyboard: Activity: Your first commit
+## 🧠 Unit Behaviors
 
-The following steps will guide you through the process of committing a change on GitHub. A commit records changes in renaming, changing content within, creating a new file, and any other changes made to your project. For this exercise, committing a change requires first adding a new file to your new branch.
+| Unit Type | Primary Behavior | Secondary Behavior |
+|-----------|------------------|-------------------|
+| Warrior | Seek nearest enemy | Protect allies |
+| Knight | Seek toughest enemy | Protect vulnerable |
+| Archer | Target farthest enemy | Flee from threats |
+| Mage | Hide behind allies | Target weakest enemy |
 
-> [!NOTE]
-> `.md` is a file extension that creates a Markdown file. You can learn more about Markdown by visiting "[Basic writing and formatting syntax](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)" in our docs or by taking the "[Communicating using Markdown](https://github.com/skills/communicate-using-markdown)" Skills course.
+## 🎴 Unit Types
 
-1. On the **< > Code** tab in the header menu of your repository, make sure you're on your new branch `my-first-branch`.
+### Basic Units
+- **Warrior** (⚔️): Balanced melee fighter
+- **Archer** (🏹): Ranged attacker
+- **Knight** (🛡️): Tanky protector
+- **Mage** (🔮): Fragile but powerful spellcaster
 
-2. Select the **Add file** drop-down and click **Create new file**.
+### Advanced Units
+- **Paladin**: Holy warrior with healing
+- **Ranger**: Mobile archer with extended range
+- **Berserker**: High damage dealer with rage mechanics
+- **Wizard**: Area damage specialist
 
-   ![create new file option](/images/create-new-file.png)
+### Enemies
+- **Goblin**: Weak but numerous
+- **Orc**: Strong melee enemy
+- **Skeleton**: Undead with revival chance
+- **Dark Mage**: Enemy spellcaster
 
-3. In the **Name your file...** field, enter `PROFILE.md`.
+### Bosses
+- **Dragon**: Flying boss with breath attacks
+- **Demon Lord**: Summons minions
+- **Lich**: Undead master with necromancy
 
-4. In the **Enter file contents here** area, copy the following content to your file:
+## 🎮 How to Play
 
-   ```
-   Welcome to my GitHub profile!
-   ```
+1. **Deploy Units**: Click cards in your hand, then click on the battlefield to place them
+2. **Manage Energy**: Each card costs energy to play
+3. **End Turn**: Click "End Turn" to start the combat phase
+4. **Watch Combat**: Units automatically move and attack based on their AI
+5. **Survive Waves**: Defeat all enemies to advance to the next wave
+6. **Build Your Deck**: Choose new cards after each wave
 
-   ![profile.md file screenshot](/images/my-profile-file.png)
+## 🎯 Victory Conditions
 
-5. Click **Commit changes...** in the upper right corner above the contents box. For commits, you can enter a short commit message that describes what changes you made. This message helps others know what's included in your commit. GitHub offers a simple default message, but let's change it slightly for practice. First, enter `Add PROFILE.md` in the first text-entry field titled "Commit message".
+- **Victory**: Defeat all enemies in each wave
+- **Defeat**: All your units are destroyed
+- **Progression**: Survive multiple waves, face bosses every 5 waves
 
-   ![screenshot of adding a new file with a commit message](/images/commit-full-screen.png)
+## 🚀 Features
 
-6. In this lesson, we'll ignore the other fields and click **Commit changes**.
-7. Wait about 20 seconds then refresh this page (the one you're following instructions from). [GitHub Actions](https://docs.github.com/en/actions) will automatically update to the next step.
+- **Modern UI**: Beautiful, responsive design with animations
+- **Smart AI**: Sophisticated behavior system for all units
+- **Deck Building**: Roguelike progression with card collection
+- **Wave System**: Increasing difficulty with boss encounters
+- **Pathfinding**: Units intelligently navigate the battlefield
+- **Special Effects**: Critical hits, armor, healing, and more
 
-<footer>
+## 🎨 Technical Features
 
-<!--
-  <<< Author notes: Footer >>>
-  Add a link to get support, GitHub status page, code of conduct, license link.
--->
+- **HTML5 Canvas**: Smooth rendering and animations
+- **Modular Architecture**: Clean, maintainable code structure
+- **Responsive Design**: Works on desktop and mobile
+- **Debug Tools**: Built-in debugging and cheat functions
+
+## 🎮 Controls
+
+- **Mouse**: Click to select cards and place units
+- **Space/Enter**: End turn
+- **Escape**: Cancel card selection
+- **1-5**: Quick card selection
+- **View Paths**: See enemy spawn positions
+
+## 🛠️ Development
+
+### File Structure
+```
+├── index.html          # Main game page
+├── styles.css          # Game styling
+├── js/
+│   ├── main.js         # Entry point and event handling
+│   ├── game.js         # Main game logic
+│   ├── cards.js        # Card management system
+│   ├── units.js        # Unit class and mechanics
+│   ├── battlefield.js  # Grid and rendering system
+│   └── ai.js           # AI behavior system
+```
+
+### Debug Commands
+Open the browser console and use:
+- `debugGame()` - Show current game state
+- `addEnergy(amount)` - Add energy (cheat)
+- `drawCards(count)` - Draw extra cards (cheat)
+- `spawnEnemy(type)` - Spawn an enemy (cheat)
+
+## 🎯 Future Enhancements
+
+- **Environmental Tiles**: Hazards, buffs, and cover
+- **Card Scuttling**: Remove cards for energy
+- **Unit Repositioning**: Move units after placement
+- **Relic System**: Passive bonuses and upgrades
+- **More Unit Types**: Additional classes and abilities
+- **Save/Load System**: Progress persistence
+- **Sound Effects**: Audio feedback and music
+
+## 🚀 Getting Started
+
+1. Open `index.html` in a modern web browser
+2. Start deploying units and fighting enemies
+3. Experiment with different unit combinations
+4. Try to survive as many waves as possible!
 
 ---
 
-Get help: [Post in our discussion board](https://github.com/orgs/skills/discussions/categories/introduction-to-github) &bull; [Review the GitHub status page](https://www.githubstatus.com/)
-
-&copy; 2024 GitHub &bull; [Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md) &bull; [MIT License](https://gh.io/mit)
-
-</footer>
+**Enjoy the game!** 🎮⚔️🛡️
