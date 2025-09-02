@@ -1,0 +1,550 @@
+/* Enhanced Styles for Geometry Rain Game */
+
+/* Enhanced notification styles */
+.ui-notification.success {
+    color: #00ff00 !important;
+    text-shadow: 0 0 10px #00ff00;
+}
+
+.ui-notification.warning {
+    color: #ffff00 !important;
+    text-shadow: 0 0 10px #ffff00;
+}
+
+.ui-notification.error {
+    color: #ff0000 !important;
+    text-shadow: 0 0 10px #ff0000;
+}
+
+/* Save/Load button styles */
+.save-load-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.save-load-group button {
+    background: #333;
+    color: #0f0;
+    border: 1px solid #0f0;
+    padding: 0.5rem 1rem;
+    font-family: 'Press Start 2P', cursive;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 12px;
+}
+
+.save-load-group button:hover {
+    background: #0f0;
+    color: #000;
+}
+
+.save-load-group button:active {
+    transform: scale(0.95);
+}
+
+/* Performance metrics display */
+.performance-metrics {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid #0f0;
+    padding: 10px;
+    font-family: monospace;
+    font-size: 12px;
+    color: #0f0;
+    z-index: 15;
+}
+
+/* Accessibility mode indicators */
+.accessibility-indicator {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid #ffff00;
+    padding: 5px 10px;
+    font-size: 10px;
+    color: #ffff00;
+    z-index: 15;
+}
+
+/* Enhanced touch control visual feedback */
+.touch-zone {
+    transition: background-color 0.2s;
+}
+
+.touch-zone:active {
+    background-color: rgba(0, 255, 0, 0.3);
+}
+
+/* Achievement notification styles */
+.achievement-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    border: 3px solid #ff8c00;
+    padding: 20px;
+    text-align: center;
+    font-family: 'Press Start 2P', cursive;
+    color: #000;
+    z-index: 1000;
+    animation: achievementPop 0.5s ease-out;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+}
+
+@keyframes achievementPop {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+.achievement-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.achievement-description {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* Enhanced health bar */
+#health-bar-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+#health-bar {
+    transition: width 0.3s ease-out;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #ff0000, #ff6600, #ffff00, #00ff00);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+/* Enhanced score display */
+#score {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #0f0;
+    animation: scoreGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes scoreGlow {
+    from {
+        box-shadow: 0 0 5px #0f0;
+    }
+    to {
+        box-shadow: 0 0 20px #0f0, 0 0 30px #0f0;
+    }
+}
+
+/* Enhanced wave display */
+#wave {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #00ffff;
+    animation: wavePulse 3s ease-in-out infinite;
+}
+
+@keyframes wavePulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Enhanced lives display */
+#lives {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #ff0000;
+}
+
+/* Enhanced credits display */
+#credits {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #ffff00;
+}
+
+/* Enhanced combo display */
+.combo-display {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 48px;
+    font-weight: bold;
+    color: #ffff00;
+    text-shadow: 0 0 20px #ffff00;
+    z-index: 20;
+    animation: comboScale 0.3s ease-out;
+}
+
+@keyframes comboScale {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* Enhanced power-up indicators */
+.powerup-indicator {
+    position: absolute;
+    bottom: 100px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #0f0;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 12px;
+    color: #0f0;
+    z-index: 15;
+}
+
+.powerup-timer {
+    width: 100%;
+    height: 4px;
+    background: #333;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 5px;
+}
+
+.powerup-timer-fill {
+    height: 100%;
+    background: #0f0;
+    transition: width 0.1s linear;
+}
+
+/* Enhanced boss health display */
+.boss-health-container {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #ff0000;
+    border-radius: 10px;
+    overflow: hidden;
+    z-index: 15;
+}
+
+.boss-health-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #ff0000, #ff6600, #ffff00);
+    transition: width 0.3s ease-out;
+    border-radius: 8px;
+}
+
+/* Enhanced pause menu */
+.pause-menu {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    border: 3px solid #0f0;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    z-index: 25;
+    box-shadow: 0 0 50px rgba(0, 255, 0, 0.5);
+}
+
+.pause-menu h2 {
+    color: #0f0;
+    margin-bottom: 20px;
+    font-size: 24px;
+    text-shadow: 0 0 10px #0f0;
+}
+
+.pause-menu button {
+    background: #333;
+    color: #0f0;
+    border: 2px solid #0f0;
+    padding: 15px 30px;
+    margin: 10px;
+    font-family: 'Press Start 2P', cursive;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-radius: 8px;
+}
+
+.pause-menu button:hover {
+    background: #0f0;
+    color: #000;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+}
+
+/* Enhanced game over screen */
+.game-over-enhanced {
+    background: linear-gradient(45deg, #000, #1a0000, #000);
+    border: 3px solid #ff0000;
+    box-shadow: 0 0 50px rgba(255, 0, 0, 0.5);
+}
+
+.game-over-enhanced h2 {
+    color: #ff0000;
+    text-shadow: 0 0 20px #ff0000;
+    animation: gameOverPulse 2s ease-in-out infinite;
+}
+
+@keyframes gameOverPulse {
+    0%, 100% {
+        text-shadow: 0 0 20px #ff0000;
+    }
+    50% {
+        text-shadow: 0 0 40px #ff0000, 0 0 60px #ff0000;
+    }
+}
+
+/* Enhanced start screen */
+.start-screen-enhanced {
+    background: linear-gradient(45deg, #000, #001a00, #000);
+    border: 3px solid #0f0;
+    box-shadow: 0 0 50px rgba(0, 255, 0, 0.5);
+}
+
+.start-screen-enhanced h2 {
+    color: #0f0;
+    text-shadow: 0 0 20px #0f0;
+    animation: titleGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes titleGlow {
+    from {
+        text-shadow: 0 0 20px #0f0;
+    }
+    to {
+        text-shadow: 0 0 40px #0f0, 0 0 60px #0f0;
+    }
+}
+
+/* Enhanced button animations */
+.enhanced-button {
+    position: relative;
+    overflow: hidden;
+}
+
+.enhanced-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.enhanced-button:hover::before {
+    left: 100%;
+}
+
+/* Enhanced particle effects */
+.particle-glow {
+    filter: drop-shadow(0 0 10px currentColor);
+}
+
+/* Enhanced enemy death effects */
+.enemy-death {
+    animation: enemyDeath 0.5s ease-out forwards;
+}
+
+@keyframes enemyDeath {
+    0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.5) rotate(180deg);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(0) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Enhanced power-up collection effects */
+.powerup-collect {
+    animation: powerupCollect 0.3s ease-out;
+}
+
+@keyframes powerupCollect {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.3);
+    }
+    100% {
+        transform: scale(0);
+    }
+}
+
+/* Enhanced screen shake effect */
+.screen-shake {
+    animation: screenShake 0.1s ease-in-out infinite;
+}
+
+@keyframes screenShake {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    25% {
+        transform: translate(-2px, -2px);
+    }
+    50% {
+        transform: translate(2px, 2px);
+    }
+    75% {
+        transform: translate(-2px, 2px);
+    }
+}
+
+/* Enhanced loading screen */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid #333;
+    border-top: 3px solid #0f0;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    color: #0f0;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 16px;
+    text-align: center;
+}
+
+/* Enhanced mobile responsiveness */
+@media (max-width: 480px) {
+    .enhanced-button {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+    
+    .pause-menu {
+        padding: 20px;
+        margin: 10px;
+    }
+    
+    .performance-metrics {
+        font-size: 10px;
+        padding: 5px;
+    }
+}
+
+/* Enhanced accessibility features */
+.accessibility-high-contrast {
+    filter: contrast(200%) brightness(150%);
+}
+
+.accessibility-large-text {
+    font-size: 1.2em;
+}
+
+.accessibility-reduced-motion * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+}
+
+/* Enhanced visual feedback for interactions */
+.interactive-element {
+    transition: all 0.2s ease;
+}
+
+.interactive-element:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.interactive-element:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Enhanced focus indicators for accessibility */
+.interactive-element:focus {
+    outline: 3px solid #00ffff;
+    outline-offset: 2px;
+}
+
+/* Enhanced error states */
+.error-state {
+    border-color: #ff0000 !important;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5) !important;
+    animation: errorShake 0.5s ease-in-out;
+}
+
+@keyframes errorShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Enhanced success states */
+.success-state {
+    border-color: #00ff00 !important;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5) !important;
+    animation: successPulse 0.5s ease-in-out;
+}
+
+@keyframes successPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}

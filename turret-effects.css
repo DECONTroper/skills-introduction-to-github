@@ -1,0 +1,408 @@
+/* Enhanced Turret Visual Effects CSS */
+
+/* Turret base styling */
+.enhanced-turret {
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+/* Turret glow effects */
+.turret-glow {
+    filter: drop-shadow(0 0 10px #00ffff) drop-shadow(0 0 20px #0088ff);
+    animation: turretPulse 2s ease-in-out infinite;
+}
+
+@keyframes turretPulse {
+    0%, 100% {
+        filter: drop-shadow(0 0 10px #00ffff) drop-shadow(0 0 20px #0088ff);
+    }
+    50% {
+        filter: drop-shadow(0 0 15px #00ffff) drop-shadow(0 0 25px #0088ff) drop-shadow(0 0 35px #0088ff);
+    }
+}
+
+/* Damage feedback effects */
+.turret-damaged {
+    animation: turretShake 0.2s ease-in-out;
+}
+
+@keyframes turretShake {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-2px, -2px); }
+    50% { transform: translate(2px, 2px); }
+    75% { transform: translate(-2px, 2px); }
+}
+
+.turret-damage-flash {
+    animation: damageFlash 0.3s ease-in-out;
+}
+
+@keyframes damageFlash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* Death sequence effects */
+.death-beam {
+    background: linear-gradient(90deg, 
+        rgba(0, 136, 255, 0) 0%,
+        rgba(0, 136, 255, 0.8) 30%,
+        rgba(0, 136, 255, 0.8) 70%,
+        rgba(0, 136, 255, 0) 100%);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
+    animation: beamRise 1s ease-out;
+}
+
+@keyframes beamRise {
+    0% { height: 0; }
+    100% { height: 100%; }
+}
+
+.expansion-beam {
+    background: linear-gradient(0deg,
+        rgba(0, 136, 255, 0) 0%,
+        rgba(0, 136, 255, 0.8) 30%,
+        rgba(0, 136, 255, 0.8) 70%,
+        rgba(0, 136, 255, 0) 100%);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
+    animation: beamExpand 1.5s ease-out;
+}
+
+@keyframes beamExpand {
+    0% { width: 0; }
+    100% { width: 100%; }
+}
+
+/* Respawn sequence effects */
+.respawn-beam {
+    background: linear-gradient(90deg, #00ffff, #0088ff);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+    animation: beamTravel 2s ease-out;
+}
+
+@keyframes beamTravel {
+    0% { 
+        transform: scaleX(0);
+        opacity: 1;
+    }
+    100% { 
+        transform: scaleX(1);
+        opacity: 0;
+    }
+}
+
+.respawn-piece {
+    background: rgba(0, 136, 255, 0.8);
+    border: 2px solid #00ffff;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+    animation: pieceMaterialize 0.5s ease-out;
+}
+
+@keyframes pieceMaterialize {
+    0% { 
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    100% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.respawn-pulse {
+    border: 3px solid #00ffff;
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
+    animation: respawnPulse 0.5s ease-out;
+}
+
+@keyframes respawnPulse {
+    0% { 
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% { 
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+/* Particle effects */
+.turret-particle {
+    background: #00ffff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #00ffff;
+    animation: particleFloat 1s ease-out;
+}
+
+@keyframes particleFloat {
+    0% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% { 
+        opacity: 0;
+        transform: scale(0.5) translateY(-20px);
+    }
+}
+
+.vaporization-particle {
+    background: #00ffff;
+    border-radius: 50%;
+    box-shadow: 0 0 15px #00ffff;
+    animation: vaporize 1s ease-out;
+}
+
+@keyframes vaporize {
+    0% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.8;
+        transform: scale(1.5);
+    }
+    100% { 
+        opacity: 0;
+        transform: scale(0.1);
+    }
+}
+
+/* Explosion effects */
+.turret-explosion {
+    background: radial-gradient(circle, #00ffff, #0088ff, transparent);
+    border-radius: 50%;
+    animation: explosionExpand 1.5s ease-out;
+}
+
+@keyframes explosionExpand {
+    0% { 
+        transform: scale(0);
+        opacity: 1;
+    }
+    50% { 
+        opacity: 0.8;
+    }
+    100% { 
+        transform: scale(3);
+        opacity: 0;
+    }
+}
+
+/* Enhanced visual feedback */
+.turret-outline {
+    border: 2px solid #00ffff;
+    box-shadow: 
+        inset 0 0 10px rgba(0, 255, 255, 0.3),
+        0 0 20px rgba(0, 255, 255, 0.5);
+}
+
+.turret-center-detail {
+    background: #00ffff;
+    box-shadow: 0 0 10px #00ffff;
+    animation: centerPulse 1s ease-in-out infinite;
+}
+
+@keyframes centerPulse {
+    0%, 100% { 
+        box-shadow: 0 0 10px #00ffff;
+    }
+    50% { 
+        box-shadow: 0 0 20px #00ffff, 0 0 30px #00ffff;
+    }
+}
+
+/* Damage indicators */
+.damage-indicator {
+    border: 1px dashed #ff0000;
+    animation: damageIndicator 0.3s ease-in-out;
+}
+
+@keyframes damageIndicator {
+    0%, 100% { 
+        border-color: #ff0000;
+        opacity: 1;
+    }
+    50% { 
+        border-color: #ff6666;
+        opacity: 0.7;
+    }
+}
+
+/* Respawn progress indicators */
+.respawn-progress {
+    background: linear-gradient(90deg, #00ffff, #0088ff);
+    height: 4px;
+    border-radius: 2px;
+    animation: progressFill 3s ease-out;
+}
+
+@keyframes progressFill {
+    0% { width: 0%; }
+    100% { width: 100%; }
+}
+
+/* Enhanced particle trails */
+.particle-trail {
+    background: #00ffff;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #00ffff;
+    animation: trailFade 1s ease-out;
+}
+
+@keyframes trailFade {
+    0% { 
+        opacity: 0.8;
+        transform: scale(1);
+    }
+    100% { 
+        opacity: 0;
+        transform: scale(0.5);
+    }
+}
+
+/* Beam core effects */
+.beam-core {
+    background: rgba(0, 255, 255, 0.9);
+    box-shadow: 
+        0 0 10px rgba(0, 255, 255, 0.8),
+        0 0 20px rgba(0, 255, 255, 0.6),
+        0 0 30px rgba(0, 255, 255, 0.4);
+    animation: coreGlow 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes coreGlow {
+    0% { 
+        box-shadow: 
+            0 0 10px rgba(0, 255, 255, 0.8),
+            0 0 20px rgba(0, 255, 255, 0.6),
+            0 0 30px rgba(0, 255, 255, 0.4);
+    }
+    100% { 
+        box-shadow: 
+            0 0 15px rgba(0, 255, 255, 1),
+            0 0 25px rgba(0, 255, 255, 0.8),
+            0 0 35px rgba(0, 255, 255, 0.6);
+    }
+}
+
+/* Enhanced glow effects */
+.enhanced-glow {
+    filter: 
+        drop-shadow(0 0 5px currentColor)
+        drop-shadow(0 0 10px currentColor)
+        drop-shadow(0 0 15px currentColor);
+}
+
+/* State-specific animations */
+.turret-normal {
+    animation: normalState 2s ease-in-out infinite;
+}
+
+@keyframes normalState {
+    0%, 100% { 
+        filter: drop-shadow(0 0 10px #00ffff);
+    }
+    50% { 
+        filter: drop-shadow(0 0 15px #00ffff) drop-shadow(0 0 25px #0088ff);
+    }
+}
+
+.turret-destroyed {
+    animation: destroyedState 0.5s ease-out;
+}
+
+@keyframes destroyedState {
+    0% { 
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% { 
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+.turret-respawning {
+    animation: respawningState 3s ease-out;
+}
+
+@keyframes respawningState {
+    0% { 
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    50% { 
+        opacity: 0.5;
+        transform: scale(0.8);
+    }
+    100% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Enhanced visual effects for different turret types */
+.turret-type-turret {
+    border-left: 3px solid #00ffff;
+    border-right: 3px solid #00ffff;
+}
+
+.turret-type-missile {
+    border-top: 3px solid #ffaa00;
+    border-bottom: 3px solid #ffaa00;
+}
+
+/* Performance optimizations */
+.turret-optimized {
+    will-change: transform, opacity, filter;
+    transform: translateZ(0);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .turret-glow {
+        filter: drop-shadow(0 0 5px #00ffff);
+    }
+    
+    .particle-trail {
+        display: none; /* Reduce particle effects on mobile */
+    }
+}
+
+/* Accessibility enhancements */
+@media (prefers-reduced-motion: reduce) {
+    .turret-glow,
+    .turret-pulse,
+    .particle-trail,
+    .respawn-pulse {
+        animation: none;
+    }
+    
+    .turret-damaged {
+        animation: none;
+        border: 2px solid #ff0000;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .enhanced-turret {
+        border: 3px solid #00ffff;
+        background: #000;
+    }
+    
+    .turret-glow {
+        filter: none;
+        border: 2px solid #00ffff;
+    }
+}
+
+/* Print styles */
+@media print {
+    .enhanced-turret,
+    .particle-trail,
+    .respawn-beam {
+        display: none;
+    }
+}
